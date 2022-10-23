@@ -4,6 +4,12 @@
 
     use Illuminate\Foundation\Http\FormRequest;
 
+    /**
+     * Set provider and url validation
+     *
+     * @property string $provider
+     * @property string $url
+     */
     class ShortRequest extends FormRequest
     {
 
