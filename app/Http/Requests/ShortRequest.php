@@ -6,8 +6,6 @@
 
     class ShortRequest extends FormRequest
     {
-        public string $provider;
-        public string $url;
 
         /**
          * Determine if the user is authorized to make this request.
