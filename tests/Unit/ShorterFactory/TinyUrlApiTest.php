@@ -17,10 +17,10 @@
         public function test_check_tiny_create_endpoint(): void
         {
 
-            $body = file_get_contents(base_path('tests/Fixtures/tinyUrlCreatedResponse.json'));
+            $fixtureResponse = file_get_contents(base_path('tests/Fixtures/tinyUrlCreatedResponse.json'));
 
             Http::fake([
-                'https://api.tinyurl.com/create' => Http::response($body, 200, []),
+                'https://api.tinyurl.com/create' => Http::response($fixtureResponse, 200, []),
             ]);
 
             $this->assertEquals(

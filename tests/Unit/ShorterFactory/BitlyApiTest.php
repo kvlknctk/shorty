@@ -17,10 +17,10 @@
         public function test_check_bitly_create_endpoint(): void
         {
 
-            $body = file_get_contents(base_path('tests/Fixtures/bitlyCreatedResponse.json'));
+            $fixtureResponse = file_get_contents(base_path('tests/Fixtures/bitlyCreatedResponse.json'));
 
             Http::fake([
-                'https://api-ssl.bitly.com/v4/shorten' => Http::response($body, 200, []),
+                'https://api-ssl.bitly.com/v4/shorten' => Http::response($fixtureResponse, 200, []),
             ]);
 
             $this->assertEquals(
