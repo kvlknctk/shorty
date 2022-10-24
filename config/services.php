@@ -36,4 +36,9 @@ return [
         'domain' => env('SHORT_URL_TINY_DOMAIN'),
     ],
 
+    'bitly' => [
+        'token' => env('SHORT_URL_BITLY_TOKEN'),
+        'domain' => env('SHORT_URL_BITLY_DOMAIN'),
+    ],
+
 ];

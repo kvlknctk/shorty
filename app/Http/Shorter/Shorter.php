@@ -15,6 +15,7 @@
         {
             return match ($provider) {
                 'tiny' => new TinyProvider(),
+                'bitly' => new BitlyProvider(),
                 default => throw new \InvalidArgumentException('Shorter provider service not found.'),
             };
         }
