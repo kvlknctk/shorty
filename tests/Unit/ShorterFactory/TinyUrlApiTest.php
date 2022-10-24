@@ -9,7 +9,8 @@
     {
 
         /**
-         * A basic unit test example.
+         * We can perform mock unit tests by taking the generated
+         * tinyurl response to the fixtures directory before the test.
          *
          * @return void
          */
