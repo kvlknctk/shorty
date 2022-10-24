@@ -17,7 +17,7 @@
         public function test_check_tiny_create_endpoint(): void
         {
 
-            $body = file_get_contents(base_path('tests/Fixtures/tinyUrlCreatedData.json'));
+            $body = file_get_contents(base_path('tests/Fixtures/tinyUrlCreatedResponse.json'));
 
             Http::fake([
                 'https://api.tinyurl.com/create' => Http::response($body, 200, []),

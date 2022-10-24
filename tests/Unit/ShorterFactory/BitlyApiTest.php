@@ -17,7 +17,7 @@
         public function test_check_bitly_create_endpoint(): void
         {
 
-            $body = file_get_contents(base_path('tests/Fixtures/bitlyCreatedData.json'));
+            $body = file_get_contents(base_path('tests/Fixtures/bitlyCreatedResponse.json'));
 
             Http::fake([
                 'https://api-ssl.bitly.com/v4/shorten' => Http::response($body, 200, []),
