@@ -1,66 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+### Requirements
+This package has the following requirements:
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- PHP 8.0 or higher
+- Node.js 14.15.0 or higher
 
-## About Laravel
+## Installation
+You can easily install this package using Composer, by running the following command:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+git clone https://github.com/kvlknctk/shorty.git
+cp .env.example .env
+```
+Notice: You need to set tiny and bitly api keys in .env file.
+```bash
+composer update
+npm install 
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Run Project 
+You can easily install this package using Composer, by running the following command:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+php artisan serve 
+```
 
-## Learning Laravel
+## Hot reload for React
+You can use hot reload for a good developer experience.
+For this, you need to have your project up and running with `php artisan serve` first.
+```bash
+npm dev
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+# To add new shortener service
+## Create your own  URL shorter provider file 
+You can create your own shortener service as follows. 
+To do this, you can go to `app/Http/Shorter` folder. You have to return string value from your provider
+```php
+<?php
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    namespace App\Http\Shorter;
 
-## Laravel Sponsors
+    use Illuminate\Support\Facades\Http;
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+    class TinyProvider implements ShortenerInterface
+    {
+        /**
+         * Generate short url from tinyurl.com
+         *
+         * @param string $url
+         * @return object
+         */
+        public function shortUrl(string $url): string
+        {
+            $responseData = Http::withHeaders([
+                'Authorization' => 'Bearer ' . config('services.tiny.token'),
+                'Content-Type'  => 'application/json',
+                'Accept'        => 'application/json',
+            ])->post('https://api.tinyurl.com/create', [
+                "url"    => $url,
+                "domain" => config('services.tiny.domain'),
+            ]);
 
-### Premium Partners
+            // Return PHP object for further processing
+            return $responseData->object()->data->tiny_url;
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+        }
+    }
+```
 
-## Contributing
+## Connect your new service to factory
+then you need to connect the provider you added to the factory. For this, add as shown as an example.
+Use this file to do this. `app/Http/Shorter/Shorter.php`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+```php
+public function setShorter(string $provider): ShortenerInterface
+{
+    return match ($provider) {
+        'tiny' => new TinyProvider(),
+        'bitly' => new BitlyProvider(),
+        // Add here your new provider with your custom key
+        // for example 'myprovider' => new MyProvider()
+        default => throw new \InvalidArgumentException('Shorter provider service not found.'),
+    };
+}
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Edit Request Validation
+Users need to specify the provider in order to make a request.
+We have a Request file for this. 
+You need to specify the `myprovider` name you have added here.
+`app/Http/Requests/ShorterRequest.php`
 
-## License
+```php
+/**
+ * Get the validation rules that apply to the request.
+ */
+public function rules()
+{
+    return [
+        'url'      => 'required|url',
+        'provider' => 'required|in:bitly,tiny', // Add here your new provider with your custom key
+    ];
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Available shorter services
+
+| Usable Shorter Provider Service | Provider Name | Api Verison |
+|---------------------------------|---------------|-------------|
+| TinyURL             | `tiny`        | 3.0.0       |
+| Bit.ly                | `bitly`       | 4.0.0       |
