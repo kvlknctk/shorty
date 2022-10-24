@@ -52,6 +52,28 @@
                             Http::get('https://api.tinyurl.com/create')->json()
                         );*/
 
+
+        }
+
+
+        /**
+         * It controls the error that will occur in case of token problem.
+         *
+         * @return void
+         */
+        public function test_check_tiny_forbiden_response(): void
+        {
+
+            $fixtureResponse = file_get_contents(base_path('tests/Fixtures/tinyUrlUnauthenticatedResponse.json'));
+            $statusCode      = 401;
+
+            Http::fake([
+                'https://api.tinyurl.com/create' => Http::response($fixtureResponse, $statusCode, []),
+            ]);
+
+            $response = Http::get('https://api.tinyurl.com/create');
+            $this->assertEquals($statusCode, $response->status());
+
         }
 
     }
