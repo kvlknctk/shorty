@@ -4,5 +4,5 @@
 
     interface ShortenerInterface
     {
-        public function shortUrl(string $url): object;
+        public function shortUrl(string $url): string;
     }

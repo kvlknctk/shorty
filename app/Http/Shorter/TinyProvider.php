@@ -12,7 +12,7 @@
          * @param string $url
          * @return object
          */
-        public function shortUrl(string $url): object
+        public function shortUrl(string $url): string
         {
             $responseData = Http::withHeaders([
                 'Authorization' => 'Bearer ' . config('services.tiny.token'),
@@ -24,7 +24,7 @@
             ]);
 
             // Return PHP object for further processing
-            return $responseData->object();
+            return $responseData->object()->data->tiny_url;
 
         }
     }
