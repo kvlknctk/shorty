@@ -31,4 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'tiny' => [
+        'token' => env('SHORT_URL_TINY_TOKEN'),
+        'domain' => env('SHORT_URL_TINY_DOMAIN'),
+    ],
+
+    'bitly' => [
+        'token' => env('SHORT_URL_BITLY_TOKEN'),
+        'domain' => env('SHORT_URL_BITLY_DOMAIN'),
+    ],
+
 ];
