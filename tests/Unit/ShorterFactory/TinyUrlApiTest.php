@@ -18,10 +18,11 @@
         {
 
             $fixtureResponse = file_get_contents(base_path('tests/Fixtures/tinyUrlCreatedResponse.json'));
+            $statusCode      = 200;
+            $createUrl       = 'https://api.tinyurl.com/create';
 
-            Http::fake([
-                'https://api.tinyurl.com/create' => Http::response($fixtureResponse, 200, []),
-            ]);
+
+            Http::fake([$createUrl => Http::response($fixtureResponse, $statusCode, []),]);
 
             $this->assertEquals(
                 [
@@ -43,7 +44,7 @@
                     'code'   => 0,
                     "errors" => []
                 ],
-                Http::get('https://api.tinyurl.com/create')->json()
+                Http::get($createUrl)->json()
             );
 
             // We can also use the TinyUrl API to make native assertions...
@@ -66,12 +67,13 @@
 
             $fixtureResponse = file_get_contents(base_path('tests/Fixtures/tinyUrlUnauthenticatedResponse.json'));
             $statusCode      = 401;
+            $createUrl       = 'https://api.tinyurl.com/create';
 
             Http::fake([
                 'https://api.tinyurl.com/create' => Http::response($fixtureResponse, $statusCode, []),
             ]);
 
-            $response = Http::get('https://api.tinyurl.com/create');
+            $response = Http::get($createUrl);
             $this->assertEquals($statusCode, $response->status());
 
         }

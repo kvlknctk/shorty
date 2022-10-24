@@ -18,10 +18,10 @@
         {
 
             $fixtureResponse = file_get_contents(base_path('tests/Fixtures/bitlyCreatedResponse.json'));
+            $statusCode      = 200;
+            $createUrl       = 'https://api-ssl.bitly.com/v4/shorten';
 
-            Http::fake([
-                'https://api-ssl.bitly.com/v4/shorten' => Http::response($fixtureResponse, 200, []),
-            ]);
+            Http::fake([$createUrl => Http::response($fixtureResponse, $statusCode, []),]);
 
             $this->assertEquals(
                 [
@@ -40,7 +40,7 @@
                         ]
                     ]
                 ],
-                Http::get('https://api-ssl.bitly.com/v4/shorten')->json()
+                Http::get($createUrl)->json()
             );
 
             // We can also use the Bit.ly API to make native assertions...
@@ -62,12 +62,11 @@
 
             $fixtureResponse = file_get_contents(base_path('tests/Fixtures/bitlyForbiddenResponse.json'));
             $statusCode      = 403;
+            $createUrl       = 'https://api-ssl.bitly.com/v4/shorten';
 
-            Http::fake([
-                'https://api-ssl.bitly.com/v4/shorten' => Http::response($fixtureResponse, $statusCode, []),
-            ]);
+            Http::fake([$createUrl => Http::response($fixtureResponse, $statusCode, []),]);
 
-            $response = Http::get('https://api-ssl.bitly.com/v4/shorten');
+            $response = Http::get($createUrl);
             $this->assertEquals($statusCode, $response->status());
 
         }
