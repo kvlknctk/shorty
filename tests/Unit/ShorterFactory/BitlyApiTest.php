@@ -51,4 +51,25 @@
 
         }
 
+
+        /**
+         * It controls the error that will occur in case of token problem.
+         *
+         * @return void
+         */
+        public function test_check_bitly_forbiden_response(): void
+        {
+
+            $fixtureResponse = file_get_contents(base_path('tests/Fixtures/bitlyForbiddenResponse.json'));
+            $statusCode      = 403;
+
+            Http::fake([
+                'https://api-ssl.bitly.com/v4/shorten' => Http::response($fixtureResponse, $statusCode, []),
+            ]);
+
+            $response = Http::get('https://api-ssl.bitly.com/v4/shorten');
+            $this->assertEquals($statusCode, $response->status());
+
+        }
+
     }
